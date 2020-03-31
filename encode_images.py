@@ -10,7 +10,8 @@ import config
 from encoder.generator_model import Generator
 from encoder.perceptual_model import PerceptualModel
 
-URL_FFHQ = 'https://drive.google.com/uc?id=1MEGjdvVpUsu1jB4zrXZN7Y4kBBOzizDQ'  # karras2019stylegan-ffhq-1024x1024.pkl
+#!wget https://github.com/parameter-pollution/stylegan_paintings/releases/download/v0.1/network-snapshot-008040.pk 
+URL_FFHQ = 'https://github.com/parameter-pollution/stylegan_paintings/releases/download/v0.1/network-snapshot-008040.pk'  # karras2019stylegan-ffhq-1024x1024.pkl
 
 
 def split_to_batches(l, n):
@@ -46,11 +47,17 @@ def main():
     os.makedirs(args.dlatent_dir, exist_ok=True)
 
     # Initialize generator and perceptual model
+    URL_FFHQ = 'https://github.com/parameter-pollution/stylegan_paintings/releases/download/v0.1/network-snapshot-008040.pkl'
     tflib.init_tf()
     with dnnlib.util.open_url(URL_FFHQ, cache_dir=config.cache_dir) as f:
-        generator_network, discriminator_network, Gs_network = pickle.load(f)
+     generator_network, discriminator_network, Gs = pickle.load(f)
 
-    generator = Generator(Gs_network, args.batch_size, randomize_noise=args.randomize_noise)
+
+    #tflib.init_tf()
+    #with dnnlib.util.open_url(URL_FFHQ, cache_dir=config.cache_dir) as f:
+    #    generator_network, discriminator_network, Gs_network = pickle.load(f)
+
+    generator = Generator(Gs, args.batch_size, randomize_noise=args.randomize_noise)
     perceptual_model = PerceptualModel(args.image_size, layer=9, batch_size=args.batch_size)
     perceptual_model.build_perceptual_model(generator.generated_image)
 
